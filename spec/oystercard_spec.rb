@@ -1,7 +1,6 @@
 require 'oystercard'
 
 describe Oystercard do
- 
 
   describe '#initialize' do
     it 'returns the 0 balance of a new Oyster account' do
@@ -25,12 +24,6 @@ describe Oystercard do
       expect { oystercard.touch_in }.to raise_error "Insufficient funds"
     end
   end
-
-  describe '#deduct' do
-    it 'can deduct from the balance' do
-      expect{ subject.deduct(5) }.to change{ subject.balance }.by -5
-    end
-  end
   
   describe '#top_up' do
     it 'can topup from the balance' do
@@ -52,6 +45,12 @@ describe Oystercard do
       oystercard = Oystercard.new
       oystercard.touch_out
       expect(oystercard.in_journey).to eq (false)
+    end
+    it 'deducts the minimum fare amount' do
+      oystercard = Oystercard.new
+      oystercard.topup(10)
+      oystercard.touch_in
+      expect{ oystercard.touch_out }.to change{ oystercard.balance }.by -(Oystercard::MIN_FARE)
     end
   end
 

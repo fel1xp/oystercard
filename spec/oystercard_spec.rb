@@ -19,6 +19,13 @@ describe Oystercard do
     end
   end
 
+  describe 'minimum balance' do
+    it 'returns error if balance is less than 1' do
+      oystercard = Oystercard.new
+      expect { oystercard.touch_in }.to raise_error "Insufficient funds"
+    end
+  end
+
   describe '#deduct' do
     it 'can deduct from the balance' do
       expect{ subject.deduct(5) }.to change{ subject.balance }.by -5
@@ -34,6 +41,7 @@ describe Oystercard do
   describe '#touch_in' do
     it 'turns in_journey? to true' do
       oystercard = Oystercard.new
+      oystercard.topup(10)
       oystercard.touch_in
       expect(oystercard.in_journey).to eq (true)
     end

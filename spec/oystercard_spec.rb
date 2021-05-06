@@ -3,6 +3,8 @@ require 'oystercard'
 describe Oystercard do
   subject(:oystercard) { described_class.new }
   let(:entry_station) { double :station }
+  let(:exit_station) { double :station }
+  let(:journey) { { :entry => entry_station, :exit  => exit_station } }
 
   describe '.initialize' do
     it 'returns the 0 balance of a new Oyster account' do
@@ -30,11 +32,18 @@ describe Oystercard do
     end
   end
 
-  describe 'entry_station' do
+  describe 'station' do
     it 'records entry_station when touching in' do
       oystercard.topup(10)
       oystercard.touch_in('Bond Street')
       expect(oystercard.entry_station).to eq('Bond Street')
+    end
+
+    it 'records exit_station when touching out' do
+      oystercard.topup(10)
+      oystercard.touch_in('Bond Street')
+      oystercard.touch_out('Stratford')
+      expect(oystercard.exit_station).to eq('Stratford')
     end
   end
 
@@ -42,28 +51,39 @@ describe Oystercard do
     it 'turns in_journey? to true' do
       oystercard.topup(10)
       oystercard.touch_in(entry_station)
-      expect(oystercard.in_journey).to eq (true)
+      expect(oystercard).to be_in_journey
     end
   end
 
   describe '#touch_out' do
     it 'turns in_journey? to false' do
-      oystercard.touch_out
-      expect(oystercard.in_journey).to eq (false)
+      oystercard.touch_out(exit_station)
+      expect(oystercard).not_to be_in_journey
     end
     it 'deducts the minimum fare amount' do
       oystercard.topup(10)
       oystercard.touch_in(entry_station)
-      expect{ oystercard.touch_out }.to change{ oystercard.balance }.by -(Oystercard::MIN_FARE)
+      expect{ oystercard.touch_out(exit_station) }.to change{ oystercard.balance }.by -(Oystercard::MIN_FARE)
     end
   end
-
-  it 'is in journey?' do
-    oystercard.topup(10)
-    oystercard.touch_in('Bond Street')
-    expect(oystercard).to be_in_journey
-  end
-
   
+  describe 'journey_history' do 
+    it 'is in journey?' do
+      oystercard.topup(10)
+      oystercard.touch_in('Bond Street')
+      expect(oystercard).to be_in_journey
+    end
+    
+    it 'has an empty journey history by default' do
+      expect(subject.journey_history).to be_empty
+    end
 
+    it 'records the entry and exit stations from the journey' do
+      oystercard.topup(10)
+      oystercard.touch_in(entry_station)
+      oystercard.touch_out(exit_station)
+      expect(subject.journey_history).to include(journey) 
+    end
+  end
+  
 end

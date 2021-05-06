@@ -1,4 +1,3 @@
-
 class Oystercard
   MAX_BALANCE = 90
   MIN_BALANCE = 1

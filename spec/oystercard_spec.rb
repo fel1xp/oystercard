@@ -8,7 +8,7 @@ describe Oystercard do
 
   describe '.initialize' do
     it 'returns the 0 balance of a new Oyster account' do
-      expect(oystercard.balance).to eq (0)
+      expect(oystercard.balance).to eq(0)
     end
   end
 
@@ -32,21 +32,6 @@ describe Oystercard do
     end
   end
 
-  describe 'station' do
-    it 'records entry_station when touching in' do
-      oystercard.topup(10)
-      oystercard.touch_in('Bond Street')
-      expect(oystercard.entry_station).to eq('Bond Street')
-    end
-
-    it 'records exit_station when touching out' do
-      oystercard.topup(10)
-      oystercard.touch_in('Bond Street')
-      oystercard.touch_out('Stratford')
-      expect(oystercard.exit_station).to eq('Stratford')
-    end
-  end
-
   describe '#touch_in' do
     it 'turns in_journey? to true' do
       oystercard.topup(10)
@@ -63,7 +48,7 @@ describe Oystercard do
     it 'deducts the minimum fare amount' do
       oystercard.topup(10)
       oystercard.touch_in(entry_station)
-      expect{ oystercard.touch_out(exit_station) }.to change{ oystercard.balance }.by -(Oystercard::MIN_FARE)
+      expect{ oystercard.touch_out(exit_station) }.to change{ oystercard.balance }.by -(Journey::MINIMUM_FARE)
     end
   end
   
